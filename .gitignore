@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# Eclipse IDE Stuff
+.autotools
+.cproject
+.project
+.settings
+
+# My Usual Build Dir
+build
