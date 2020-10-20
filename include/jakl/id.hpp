@@ -19,7 +19,7 @@ namespace jakl {
  * each device library requires a different integer representation so
  * it was decided to place into a class for now.
  */
-class ID {
+class ID final {
 
 	//-------------------------------------------------------------------------
 	// Types & Constants
@@ -41,6 +41,11 @@ public:
 	ID(value_type const& value = -9999) : id_(value) {
 	}
 
+	//-------------------------------------------------------------------------
+	// Operators
+	//-------------------------------------------------------------------------
+
+	/// Assign from a value_type
 	ID& operator=(value_type const& value) noexcept {
 		id_ = value;
 		return *this;

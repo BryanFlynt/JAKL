@@ -9,7 +9,7 @@
 #define CATCH_CONFIG_MAIN
 #include "../../test/unit/catch.hpp"
 
-#include "jakl/core/id.hpp"
+#include "jakl/id.hpp"
 
 
 TEST_CASE("JAKL ID", "[default]") {
