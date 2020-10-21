@@ -13,7 +13,7 @@
 #include "jakl/detail/device/device.hpp"
 #include "jakl/detail/device/gpu_device.hpp"
 #include "jakl/detail/device/host_device.hpp"
-#include "jakl/detail/shared_ptr_impl.hpp"
+#include "jakl/detail/tools/shared_ptr_impl.hpp"
 
 #include <cassert>
 

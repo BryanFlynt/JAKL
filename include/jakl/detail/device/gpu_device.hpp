@@ -11,7 +11,7 @@
 
 #include "jakl/id.hpp"
 #include "jakl/detail/device/device.hpp"
-#include "jakl/detail/singleton.hpp"
+#include "jakl/detail/tools/singleton.hpp"
 
 
 namespace jakl {

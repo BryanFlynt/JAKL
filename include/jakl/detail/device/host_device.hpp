@@ -8,11 +8,11 @@
 #ifndef INCLUDE_JAKL_DETAIL_HOST_DEVICE_HPP_
 #define INCLUDE_JAKL_DETAIL_HOST_DEVICE_HPP_
 
+#include "jakl/config.hpp"
 #include "jakl/id.hpp"
 #include "jakl/detail/device/device.hpp"
-#include "jakl/detail/singleton.hpp"
+#include "jakl/detail/tools/singleton.hpp"
 
-#include <cassert>
 
 namespace jakl {
 namespace detail {
@@ -46,7 +46,7 @@ public:
 	}
 
 	ID const& id() const noexcept {
-		assert(false); // Host has no ID
+		JAKL_ASSERT(false); // Host has no ID
 	}
 
 };
