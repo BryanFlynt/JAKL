@@ -38,7 +38,7 @@ int main() {
 
 	// Get queue on the host which executes on offload device
 	jakl::Device dev;
-	jakl::Context cont;
+	jakl::Context cont(dev);
 	jakl::Queue q(cont);
 
 //	q.submit([&](jakl::Handler&& h) {

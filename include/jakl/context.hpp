@@ -9,7 +9,7 @@
 #define INCLUDE_JAKL_CORE_CONTEXT_HPP_
 
 
-#include "jakl/core/device.hpp"
+#include "jakl/device.hpp"
 
 
 namespace jakl {
@@ -26,6 +26,7 @@ public:
 	// Construction & Destruction
 	//-------------------------------------------------------------------------
 public:
+	Context()                                = default;
 	Context(Context const& other)            = default;
 	Context(Context&& other)                 = default;
 	~Context()                               = default;

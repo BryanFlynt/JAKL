@@ -155,6 +155,7 @@ add_subdirectory(include)
 include(CTest)
 if(BUILD_TESTING)
   add_subdirectory(test/unit)
+  add_subdirectory(test/scratch)
 endif()
 
 
