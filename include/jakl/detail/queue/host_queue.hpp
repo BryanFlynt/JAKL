@@ -12,8 +12,12 @@
 #include "jakl/context.hpp"
 #include "jakl/device.hpp"
 #include "jakl/event.hpp"
+#include "jakl/handler.hpp"
+
+#include "jakl/detail/event/host_event.hpp"
+#include "jakl/detail/handler/gpu_handler.hpp"
 #include "jakl/detail/queue/queue.hpp"
-//#include "jakl/handler.hpp"
+
 
 #include <list>
 
@@ -39,6 +43,18 @@ public:
 	 */
 	host_queue(const Context& context) : queue(context){
 	}
+
+	/** Launch Task to run on Host
+	 */
+	template<typename TaskPred>
+	Event submit(TaskPred&& func) {
+		Handler kernel_handler( std::make_shared<host_handler>(shared_from_this()) );
+		auto kernel_future = std::async(std::launch::async, std::forward<TaskPred>(func), kernel_handler);
+		auto shared_future = kernel_future.share();         // Get copy-able future
+		this->running_kernels_.emplace_back(shared_future); // Calls Event Constructor
+		return this->running_kernels_.back();
+	}
+
 
 
 private:

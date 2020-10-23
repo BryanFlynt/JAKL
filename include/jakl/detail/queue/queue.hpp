@@ -12,10 +12,10 @@
 #include "jakl/context.hpp"
 #include "jakl/device.hpp"
 #include "jakl/event.hpp"
-//#include "jakl/handler.hpp"
+#include "jakl/handler.hpp"
 
 #include <list>
-
+#include <future> // std::async
 
 namespace jakl {
 namespace detail {
@@ -32,14 +32,15 @@ public:
 	queue(queue&& other)                 = default;
 	queue& operator=(const queue& other) = default;
 	queue& operator=(queue&& other)      = default;
-	~queue()                             = default;
+	virtual ~queue()                     = default;
 
 	/** Create Queue using provided Context
 	 */
 	queue(const Context& context) : execution_context_(context){
 	}
 
-
+	template<typename TaskPred>
+	virtual Event submit(TaskPred&& func) = 0;
 
 	/** Return the device the queue runs on
 	 */
@@ -56,7 +57,7 @@ public:
 		running_kernels_.clear();
 	}
 
-private:
+protected:
 	Context          execution_context_;
 	std::list<Event> running_kernels_;
 };

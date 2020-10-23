@@ -13,6 +13,7 @@
 #include "jakl/context.hpp"
 #include "jakl/device.hpp"
 #include "jakl/event.hpp"
+#include "jakl/handler.hpp"
 #include "jakl/id.hpp"
 #include "jakl/queue.hpp"
 #include "jakl/range.hpp"

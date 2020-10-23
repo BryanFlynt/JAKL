@@ -47,11 +47,13 @@ public:
 
 	/** Submit function to be run
 	 */
-//	template<typename TaskPred>
-//	Event submit(TaskPred&& func) {
-//		return impl->submit(func);
-//	}
+	template<typename TaskPred>
+	Event submit(TaskPred&& func) {
+		return impl->submit(func);
+	}
 
+	/** Get Context of Queue
+	 */
 	const Context& get_context() const noexcept {
 		return impl->get_context();
 	}

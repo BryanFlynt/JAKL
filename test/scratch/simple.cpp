@@ -41,20 +41,20 @@ int main() {
 	jakl::Context cont(dev);
 	jakl::Queue q(cont);
 
-//	q.submit([&](jakl::Handler&& h) {
-//
-//		// Get data on device we are running on
+	q.submit([&](jakl::Handler&& h) {
+
+		// Get data on device we are running on
 //		auto x_access = x_buf.get_access<jakl::access::mode::read>(h);
 //		auto y_access = y_buf.get_access<jakl::access::mode::read>(h);
 //		auto a_access = a_buf.get_access<jakl::access::mode::write>(h);
 //
-//		JAKL_COMPUTE_FUNCTION(void, f, (jakl::Index<2> indx), {
-//				a_access[indx] = x_access[indx] * y_access[indx];
-//		});
-//
-//		h.parallel_for(range, f);
-//
-//	});
+		JAKL_COMPUTE_FUNCTION(void, f, (jakl::Index<2> indx), {
+				a_access[indx] = x_access[indx] * y_access[indx];
+		});
+
+		h.parallel_for(range, f);
+
+	});
 
 	// Get data back on host vector<> a
 //	a_buf.flush();
