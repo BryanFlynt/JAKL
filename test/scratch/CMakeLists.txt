@@ -33,4 +33,3 @@ endfunction()
 
 
 add_scratch_test(simple)
-
