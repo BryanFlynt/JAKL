@@ -30,7 +30,7 @@ public:
 
 	/** Construct from shared_ptr to Implementation
 	 */
-	Handler(std::shared_ptr<Queue> const& qptr) : queue_ptr_(qptr){
+	Handler(std::shared_ptr<detail::queue> const& qptr) : queue_ptr_(qptr){
 	}
 
 	template<typename Name = std::nullptr_t, std::size_t N, typename Functor>
@@ -51,7 +51,7 @@ public:
 	// Data [Private]
 	//-------------------------------------------------------------------------
 
-	std::shared_ptr<Queue> queue_ptr_;
+	std::shared_ptr<detail::queue> queue_ptr_;
 };
 
 } /* namespace jakl */
