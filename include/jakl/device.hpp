@@ -38,15 +38,23 @@ public:
 	Device& operator=(Device&& other)      = default;
 
 	/** Default constructed Device uses the host
-	 * TODO: Should get host_device from a Factory class
+	 *
+	 * Assigns our shared_ptr (impl_ptr) to be the
+	 * single instance of the shared_ptr to host_device
+	 *
+	 * TODO: Should get host_device from a Factory class ?
 	 */
-	Device() : base_type{ detail::host_device::instance() } {
+	Device() : base_type(detail::host_device::instance()) {
 	}
 
 	/** Device with ID uses GPU device
-	 * TODO: Should get gpu_device from a Factory class
+	 *
+	 * Assigns our shared_ptr (impl_ptr) to be a new
+	 * shared_ptr tracking the GPU with device ID
+	 *
+	 * TODO: Should get gpu_device from a Factory class ?
 	 */
-	Device(ID const& id) : base_type{ new detail::gpu_device(id) }  {
+	Device(ID const& id) : base_type(new detail::gpu_device(id))  {
 	}
 
 	//-------------------------------------------------------------------------
@@ -61,26 +69,26 @@ public:
 	/** Returns true if Device is Host
 	 */
 	bool is_host() const noexcept {
-		return impl->is_host();
+		return impl_ptr->is_host();
 	}
 
 	/** Returns true if Device is CPU
 	 */
 	bool is_cpu() const noexcept {
-		return impl->is_cpu();
+		return impl_ptr->is_cpu();
 	}
 
 	/** Returns true if Device is GPU
 	 */
 	bool is_gpu() const noexcept {
-		return impl->is_gpu();
+		return impl_ptr->is_gpu();
 	}
 
 	/** Get ID of Device
 	 */
 	ID const& id() const noexcept {
 		assert(not is_host());
-		return impl->id();
+		return impl_ptr->id();
 	}
 
 	//-------------------------------------------------------------------------
@@ -88,10 +96,11 @@ public:
 	//-------------------------------------------------------------------------
 private:
 	// Provide shortcut for base type name
+	// base_type = std::shared_ptr<detail::device>
 	using base_type = typename Device::shared_ptr_impl;
 
 	// Make the implementation directly accessible in this class
-	using base_type::impl;
+	using base_type::impl_ptr;
 
 	// Allow base to access for comparison operators
 	friend base_type;
@@ -99,7 +108,8 @@ private:
 	//-------------------------------------------------------------------------
 	// Data [Private]
 	//-------------------------------------------------------------------------
-
+	//
+	// Everything in base since we are using PIMPL design pattern
 };
 
 

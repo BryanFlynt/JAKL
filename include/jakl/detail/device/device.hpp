@@ -11,19 +11,18 @@
 
 #include "jakl/id.hpp"
 
+
 namespace jakl {
 namespace detail {
 
-
 class device {
 public:
-
 	device()                               = default;
 	device(device const& other)            = default;
 	device(device&& other)                 = default;
 	device& operator=(device const& other) = default;
 	device& operator=(device&& other)      = default;
-	virtual ~device(){}
+	virtual ~device()                      = default;
 
 	/// Return true if "Host" device
 	virtual bool is_host() const noexcept = 0;

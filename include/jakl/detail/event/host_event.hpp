@@ -28,8 +28,7 @@ public:
 
 	/** Forward future into class
 	 */
-	host_event(std::future<void>&& f) :
-		future_result_(std::forward<std::future<void>>(f)) {
+	host_event(std::shared_future<void> const& f) : future_result_(f) {
 	}
 
 	/** Wait till task is complete
@@ -39,7 +38,7 @@ public:
 	}
 
 private:
-	std::future<void> future_result_;
+	std::shared_future<void> future_result_;
 };
 
 

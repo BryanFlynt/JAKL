@@ -12,22 +12,25 @@
 #include "jakl/context.hpp"
 #include "jakl/device.hpp"
 #include "jakl/event.hpp"
-#include "jakl/detail/queue/queue.hpp"
-#include "jakl/detail/queue/gpu_queue.hpp"
-#include "jakl/detail/queue/host_queue.hpp"
-#include "jakl/detail/tools/shared_ptr_impl.hpp"
+#include "jakl/handler.hpp"
 
-
+#include <list>
 #include <memory>
-
 
 namespace jakl {
 
+// Declare Handler as class
+// - circular dependency is keeping it out
+class Handler;
 
-class Queue : public detail::shared_ptr_impl<Queue,detail::queue> {
+
+/**
+ *
+ */
+class Queue final : public std::enable_shared_from_this<Queue> {
 
 public:
-	Queue()                              = delete;
+	Queue()                              = default;
 	Queue(const Queue& other)            = default;
 	Queue(Queue&& other)                 = default;
 	Queue& operator=(const Queue& other) = default;
@@ -36,43 +39,40 @@ public:
 
 	/** Create Queue using provided Context
 	 */
-	Queue(const Context& context) {
-		if( context.device().is_host() ) {
-			impl.reset(new detail::host_queue(context));
-		}
-		else if( context.device().is_gpu() ) {
-			impl.reset(new detail::gpu_queue(context));
-		}
+	Queue(const Context& context) : execution_context_(context){
 	}
 
 	/** Submit function to be run
 	 */
 	template<typename TaskPred>
 	Event submit(TaskPred&& func) {
-		return impl->submit(func);
+		Handler kernel_handler(shared_from_this());
+		auto kernel_future = std::async(std::launch::async, std::forward<TaskPred>(func), kernel_handler);
+		auto shared_future = kernel_future.share();         // Get copyable future
+		this->running_kernels_.emplace_back(shared_future); // Calls Event Constructor
+		return this->running_kernels_.back();               // Return Event with copyable future
 	}
 
-	/** Get Context of Queue
+	/** Return the device the queue runs on
 	 */
 	const Context& get_context() const noexcept {
-		return impl->get_context();
+		return execution_context_;
 	}
-
 	/** Wait for Queue to complete all tasks
 	 */
 	void wait() {
-		impl->wait();
+		for(auto kernel : running_kernels_){
+			kernel.wait();
+		}
+		running_kernels_.clear();
 	}
 
-private:
-	// Provide shortcut for base type name
-	using base_type = typename Queue::shared_ptr_impl;
+	//-------------------------------------------------------------------------
+	// Data [Private]
+	//-------------------------------------------------------------------------
 
-	// Make the base_ptr directly accessible in this class
-	using base_type::impl;
-
-	// Allow base to access for comparison operators
-	friend base_type;
+	Context          execution_context_;
+	std::list<Event> running_kernels_;
 };
 
 } // namespace jakl

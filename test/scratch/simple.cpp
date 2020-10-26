@@ -48,13 +48,13 @@ int main() {
 //		auto y_access = y_buf.get_access<jakl::access::mode::read>(h);
 //		auto a_access = a_buf.get_access<jakl::access::mode::write>(h);
 //
-		JAKL_COMPUTE_FUNCTION(void, f, (jakl::Index<2> indx), {
-				a_access[indx] = x_access[indx] * y_access[indx];
-		});
+//		JAKL_COMPUTE_FUNCTION(void, f, (jakl::Index<2> indx), {
+		//				a_access[indx] = x_access[indx] * y_access[indx];
+		//		});
 
-		h.parallel_for(range, f);
+		//		h.parallel_for(range, f);
 
-	});
+			});
 
 	// Get data back on host vector<> a
 //	a_buf.flush();
@@ -65,7 +65,7 @@ int main() {
 //			std::cout << "ERROR" << std::endl;
 //		}
 //	}
-
+	q.wait();
 	return 0;
 }
 

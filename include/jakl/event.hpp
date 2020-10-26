@@ -11,6 +11,8 @@
 
 
 #include "jakl/detail/event/event.hpp"
+#include "jakl/detail/event/gpu_event.hpp"
+#include "jakl/detail/event/host_event.hpp"
 #include "jakl/detail/tools/shared_ptr_impl.hpp"
 
 
@@ -30,10 +32,13 @@ public:
 	Event& operator=(Event&& other)      = default;
 	~Event()                             = default;
 
+	Event(std::shared_future<void> const& f) : base_type( std::make_shared<detail::host_event>(f) ){
+	}
+
 	/** Wait till task is complete
 	 */
 	void wait() const {
-		impl->wait();
+		impl_ptr->wait();
 	}
 
 
@@ -45,7 +50,7 @@ private:
 	friend base_type;
 
 	// Make the base_ptr directly accessible in this class
-	using base_type::impl;
+	using base_type::impl_ptr;
 
 };
 

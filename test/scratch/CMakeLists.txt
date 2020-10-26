@@ -17,6 +17,7 @@ function(add_scratch_test test_name)
     )
    	target_link_libraries(${test_target}
 		PRIVATE
+			pthread
 	)
 	set_target_properties(${test_target}
 		PROPERTIES

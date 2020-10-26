@@ -50,23 +50,24 @@ namespace detail {
  *	 using base_type = typename Device::shared_ptr_impl;
  *
  *   // Make the base_ptr directly accessible in this class
- *	 using base_type::implementation;
+ *	 using base_type::impl_ptr;
  *
  *	 // Allow base to access for comparison operators
  *	 friend base_type;
  * }
  * \endcode
  *
- * \tparam Parent Derived interface who holds the pointer to base
- * \tparam Base Implementation of class
+ * \tparam Interface Derived interface who holds the pointer to base
+ * \tparam Implementation Implementation of class
  */
-template<typename Parent, typename Base>
+template<typename Interface, typename Implementation>
 struct shared_ptr_impl {
 
 	//-------------------------------------------------------------------------
 	// Types & Constants
 	//-------------------------------------------------------------------------
-	using pointer_to_base = std::shared_ptr<Base>;
+	using raw_ptr_to_impl    = Implementation*;
+	using shared_ptr_to_impl = std::shared_ptr<Implementation>;
 
 	//-------------------------------------------------------------------------
 	// Construction & Destruction
@@ -79,14 +80,14 @@ struct shared_ptr_impl {
 	shared_ptr_impl& operator=(shared_ptr_impl const& other) = default;
 	shared_ptr_impl& operator=(shared_ptr_impl&& other)      = default;
 
-	/** Construct from shared_ptr to base
+	/** Construct from shared_ptr to the Implementation
 	 */
-	shared_ptr_impl(std::shared_ptr<Base> other) : impl(other) {
+	shared_ptr_impl(shared_ptr_to_impl const& other_ptr) : impl_ptr(other_ptr) {
 	}
 
-	/** Take ownership from a raw pointer
+	/** Take ownership from a raw pointer to the Implementation
 	 */
-	shared_ptr_impl(Base* ptr) : impl(ptr) {
+	shared_ptr_impl(raw_ptr_to_impl const& ptr) : impl_ptr(ptr) {
 	}
 
 	//-------------------------------------------------------------------------
@@ -99,8 +100,8 @@ struct shared_ptr_impl {
 	 * which only compares the pointer address not the value
 	 * contained within it.
 	 */
-	bool operator<(const Parent &other) const {
-		return (this->impl < other.impl);
+	bool operator<(Interface const& other) const {
+		return (this->impl_ptr < other.impl_ptr);
 	}
 
 	/** Equal To Operator
@@ -109,12 +110,12 @@ struct shared_ptr_impl {
 	 * which only compares the pointer address not the value
 	 * contained within it.
 	 */
-	bool operator ==(const Parent &other) const {
-		return (this->impl == other.impl);
+	bool operator ==(Interface const& other) const {
+		return (this->impl_ptr == other.impl_ptr);
 	}
 
-	/// The Parent forwards all calls to this base shared_ptr
-	std::shared_ptr<Base> impl;
+	/// The Interface forwards all calls to this base shared_ptr
+	shared_ptr_to_impl impl_ptr;
 };
 
 
