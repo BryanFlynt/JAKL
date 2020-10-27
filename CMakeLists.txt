@@ -93,6 +93,13 @@ message(VERBOSE "MY_INSTALL_TSTDIR = ${MY_INSTALL_TSTDIR}")
 include(RecordVars)
 
 #---------------------------------------------------------------------
+# Default Configuration Setting
+#---------------------------------------------------------------------
+option(JAKL_USE_OPENMP "Compile With OpenMP Enabled" ON  )
+option(JAKL_USE_CUDA   "Compile With CUDA Enabled"   OFF )
+option(JAKL_USE_HIP    "Compile With HIP Enabled"    OFF )
+
+#---------------------------------------------------------------------
 # Detect Library includes, flags, etc.
 #---------------------------------------------------------------------
 message(VERBOSE "")
@@ -103,9 +110,16 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.11.999")
 	cmake_policy(SET CMP0074 NEW) # find_package search <name>_ROOT
 endif()
 
-set(USE_OPENMP TRUE)
-if(USE_OPENMP) 
-	find_package(_OpenMP) 
+# Check For OpenMP
+message(STATUS "JAKL_USE_OPENMP - ${JAKL_USE_OPENMP}")
+if( JAKL_USE_OPENMP )
+	find_package(_OpenMP)
+endif()
+
+# Check for CUDA Support
+message(STATUS "JAKL_USE_CUDA - ${JAKL_USE_CUDA}")
+if( JAKL_USE_CUDA )
+	enable_language(CUDA)
 endif()
 
 #
@@ -150,12 +164,11 @@ add_compile_options("-Werror")
 
 # Build Libraries & Applications
 add_subdirectory(include)
-#add_subdirectory(src)
+add_subdirectory(src)
 
 include(CTest)
 if(BUILD_TESTING)
   add_subdirectory(test/unit)
-  add_subdirectory(test/scratch)
 endif()
 
 

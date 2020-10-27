@@ -5,9 +5,8 @@
 # 
 # Build list of all tests to create
 #
-set(jakl_scratch_files  
-		"dag.cpp"
-		"dummy.cpp"
+set(jakl_perf_files  
+		"matmul.cpp"
 )
 
 #
@@ -56,9 +55,9 @@ endif()
 # Loop over each test building and adding to ctest
 # - Build test name
 #	             
-FOREACH(scratch_src ${jakl_scratch_files})
-	string(REPLACE ".cpp" "" test_name ${scratch_src})
-	add_executable(${test_name} ${scratch_src})
+FOREACH(perf_src ${jakl_perf_files})
+	string(REPLACE ".cpp" "" test_name ${perf_src})
+	add_executable(${test_name} ${perf_src})
         set_property(TARGET ${test_name} PROPERTY CXX_EXTENSIONS OFF)
         set_property(TARGET ${test_name} PROPERTY CXX_STANDARD 17)
 	target_compile_options(${test_name} 
@@ -69,7 +68,7 @@ FOREACH(scratch_src ${jakl_scratch_files})
 			${include_headers})
 	target_link_options(${test_name} PRIVATE ${linked_options})
 	target_link_libraries(${test_name} ${linked_libraries})
-	install(TARGETS ${test_name} DESTINATION "${MY_INSTALL_TSTDIR}/scratch")
-ENDFOREACH(scratch_src)
+	install(TARGETS ${test_name} DESTINATION "${MY_INSTALL_TSTDIR}/performance")
+ENDFOREACH(perf_src)
 
 
