@@ -37,7 +37,7 @@ public:
 
 	// Return true if "CPU" device
 	bool is_cpu() const noexcept {
-		return true;
+		return false;
 	}
 
 	/// Return true if "GPU" device
@@ -46,7 +46,8 @@ public:
 	}
 
 	ID const& id() const noexcept {
-		JAKL_ASSERT(false); // Host has no ID
+		JAKL_ASSERT(false);
+		return ID(); // Return default ID
 	}
 
 };

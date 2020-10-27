@@ -44,7 +44,7 @@ public:
 
 	/** Check if Context are the same
 	 */
-	bool operator==(Context const& other) const {
+	bool operator==(Context const& other) const noexcept {
 		return device_ == other.device_;
 	}
 

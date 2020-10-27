@@ -20,7 +20,10 @@ namespace system {
 
 /** Return Number of Devices on System
  */
-std::size_t num_device();
+inline
+std::size_t num_device() {
+
+}
 
 /** Return Host Device
  */

@@ -27,6 +27,22 @@ TEST_CASE("JAKL Device", "[default]") {
 		REQUIRE( b.id()      == id    );
 	}
 
+	SECTION("Operators") {
+
+		jakl::Device a;
+		jakl::Device b;
+		REQUIRE( a == b );
+
+		jakl::ID id = 3;
+		jakl::Device c(id);
+		jakl::Device d(id);
+		REQUIRE( c == d );
+
+		jakl::Device e(id+1);
+		REQUIRE(not (c == e) );
+		REQUIRE(not (d == e) );
+	}
+
 }
 
 

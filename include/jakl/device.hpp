@@ -8,9 +8,11 @@
 #ifndef INCLUDE_JAKL_CORE_DEVICE_HPP_
 #define INCLUDE_JAKL_CORE_DEVICE_HPP_
 
+#include "jakl/config.hpp"
 #include "jakl/id.hpp"
 
 #include "jakl/detail/device/device.hpp"
+#include "jakl/detail/device/cpu_device.hpp"
 #include "jakl/detail/device/gpu_device.hpp"
 #include "jakl/detail/device/host_device.hpp"
 #include "jakl/detail/tools/shared_ptr_impl.hpp"
@@ -61,6 +63,21 @@ public:
 	// Operators
 	//-------------------------------------------------------------------------
 
+	bool operator<(Device const& other) const noexcept {
+		if( this->is_host() ^ other.is_host() ){
+			return this->is_host();
+		}
+		return (this->is_host()) ? false: (this->id() < other.id());
+	}
+
+
+	bool operator==(Device const& other) const noexcept {
+		if( this->is_host() ^ other.is_host() ){
+			return false;
+		}
+		return (this->is_host()) ? true: (this->id() == other.id());
+	}
+
 
 	//-------------------------------------------------------------------------
 	// Access
@@ -87,7 +104,7 @@ public:
 	/** Get ID of Device
 	 */
 	ID const& id() const noexcept {
-		assert(not is_host());
+		JAKL_ASSERT(not is_host());
 		return impl_ptr->id();
 	}
 

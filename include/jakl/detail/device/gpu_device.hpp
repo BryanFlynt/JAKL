@@ -38,7 +38,7 @@ public:
 		return false;
 	}
 
-	// Return true if "CPU" device
+	/// Return true if "CPU" device
 	bool is_cpu() const noexcept {
 		return false;
 	}
