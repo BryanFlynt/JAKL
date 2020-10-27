@@ -62,6 +62,17 @@ public:
 	// Operators
 	//-------------------------------------------------------------------------
 
+	/** Less than Operator
+	 *
+	 * A Host is less than a device and devices are compared by their ID
+	 */
+	bool operator<(Device const& other) const {
+		if( is_host() ^ other.is_host() ){
+			return is_host();
+		}
+		return is_host() ? false: (id() < other.id());
+	}
+
 	bool operator==(Device const& other) const {
 		if( is_host() ^ other.is_host() ){
 			return false;

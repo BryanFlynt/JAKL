@@ -17,11 +17,11 @@ template<typename T, std::size_t N>
 buffer<T,N>::buffer(pointer host_ptr, const range_type& range)
 : host_ptr_(host_ptr),
   range_(range),
-  id_of_last_write_(system::host_device()) {
+  device_last_write_(system::host_device()) {
 
 	// Allocate buffer memory on host
-	auto dev_ptr = system::allocate_memory(bytes(),id_of_last_write_);
-	data_ptrs_[id_of_last_write_] = reinterpret_cast<pointer>(dev_ptr);
+	auto dev_ptr = system::allocate_memory(bytes(),device_last_write_);
+	data_ptrs_[device_last_write_] = reinterpret_cast<pointer>(dev_ptr);
 
 	// Copy host data into buffer memory on host
 	this->update();
@@ -42,7 +42,7 @@ buffer<T,N>::~buffer() {
 template<typename T, std::size_t N>
 template<access::mode Mode>
 typename buffer<T,N>::pointer
-buffer<T,N>::get_access(const ID id){
+buffer<T,N>::get_access(const Device dev){
 
 	// If we need space then allocate it
 	if constexpr(
@@ -50,9 +50,9 @@ buffer<T,N>::get_access(const ID id){
 			(Mode == access::mode::write) or
 			(Mode == access::mode::read_write) ) {
 
-		if( data_ptrs_.count(id) == 0 ){
-			auto ptr = system::allocate_memory(bytes(),id);
-			data_ptrs_[id] = reinterpret_cast<pointer>(ptr);
+		if( data_ptrs_.count(dev) == 0 ){
+			auto ptr = system::allocate_memory(bytes(),dev);
+			data_ptrs_[dev] = reinterpret_cast<pointer>(ptr);
 		}
 	}
 	JAKL_ASSERT(data_ptrs_.count(id));
@@ -62,13 +62,13 @@ buffer<T,N>::get_access(const ID id){
 			(Mode == access::mode::read)  or
 			(Mode == access::mode::read_write) ) {
 
-		if( id != id_of_last_write_ ){
+		if( dev != device_last_write_ ){
 			system::memcpy(
-					data_ptrs_[id],
-					data_ptrs_[id_of_last_write_],
+					data_ptrs_[dev],
+					data_ptrs_[device_last_write_],
 					bytes(),
-					id,
-					id_of_last_write_);
+					dev,
+					device_last_write_);
 		}
 	}
 
@@ -76,17 +76,17 @@ buffer<T,N>::get_access(const ID id){
 	if constexpr(
 			(Mode == access::mode::write)  or
 			(Mode == access::mode::read_write) ) {
-		id_of_last_write_ = id;
+		device_last_write_ = dev;
 	}
 
-	return data_ptrs_[id];
+	return data_ptrs_[dev];
 }
 
 template<typename T, std::size_t N>
 template<access::mode Mode>
 typename buffer<T,N>::pointer
 buffer<T,N>::get_access(const Handler& handle){
-	return this->get_access<Mode>(handle.get_device().id());
+	return this->get_access<Mode>(handle.get_device());
 }
 
 template<typename T, std::size_t N>
@@ -94,22 +94,22 @@ void
 buffer<T,N>::flush() const {
 	system::memcpy(
 			host_ptr_,
-			data_ptrs_.at(id_of_last_write_),
+			data_ptrs_.at(device_last_write_),
 			bytes(),
 			system::host_device(),
-			id_of_last_write_);
+			device_last_write_);
 }
 
 template<typename T, std::size_t N>
 void
 buffer<T,N>::update() {
-	id_of_last_write_ = system::host_device();
+	device_last_write_ = system::host_device();
 	system::memcpy(
-			data_ptrs_[id_of_last_write_],
+			data_ptrs_[device_last_write_],
 			host_ptr_,
 			bytes(),
-			id_of_last_write_,
-			id_of_last_write_);
+			device_last_write_,
+			device_last_write_);
 }
 
 template<typename T, std::size_t N>

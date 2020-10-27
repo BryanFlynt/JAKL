@@ -9,8 +9,8 @@
 #define INCLUDE_JAKL_CORE_BUFFER_HPP_
 
 #include "jakl/core/access.hpp"
+#include "jakl/core/device.hpp"
 #include "jakl/core/handler.hpp"
-#include "jakl/core/id.hpp"
 #include "jakl/core/range.hpp"
 
 #include "jakl/detail/buffer.hpp"
@@ -44,8 +44,8 @@ public:
 	}
 
 	template<access::mode Mode>
-	pointer get_access(const ID id = system::host_device()){
-		return base_ptr_->template get_access<Mode>(id);
+	pointer get_access(const Device dev = system::host_device()){
+		return base_ptr_->template get_access<Mode>(dev);
 	}
 
 	template<access::mode Mode>

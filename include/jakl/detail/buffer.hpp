@@ -10,8 +10,8 @@
 
 
 #include "jakl/core/access.hpp"
+#include "jakl/core/device.hpp"
 #include "jakl/core/handler.hpp"
-#include "jakl/core/id.hpp"
 #include "jakl/core/range.hpp"
 #include "jakl/core/system.hpp"
 
@@ -46,7 +46,7 @@ public:
 	buffer(pointer host_ptr, const range_type& range);
 
 	template<access::mode Mode>
-	pointer get_access(const ID id);
+	pointer get_access(const Device dev);
 
 	template<access::mode Mode>
 	pointer get_access(const Handler& handle);
@@ -81,10 +81,10 @@ public:
 
 
 private:
-	pointer               host_ptr_;
-	std::map<ID,pointer>  data_ptrs_;
-	range_type            range_;
-	ID                    id_of_last_write_;
+	pointer                   host_ptr_;
+	std::map<Device,pointer>  data_ptrs_;
+	range_type                range_;
+	Device                    device_last_write_;
 
 };
 

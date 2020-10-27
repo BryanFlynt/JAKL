@@ -7,6 +7,7 @@
 
 #include "jakl/config/assert.hpp"
 #include "jakl/core/system.hpp"
+#include "jakl/core/device.hpp"
 
 #include "omp.h"
 
@@ -21,26 +22,29 @@ num_device() {
 	return omp_get_num_devices();
 }
 
-ID
+Device
 host_device() {
-	return omp_get_initial_device();
+	return detail::host_device::instance();
 }
 
 // OpenMP always returns default_device of 0
 // even when there are no devices ???
-ID
+Device
 default_device() {
 	if( num_device() == 0 ){
 		return host_device();
 	}
-	return omp_get_default_device();
+	return detail::gpu_device(0);
 }
 
 
+
+
+
+
 void*
-allocate_memory(const std::size_t bytes, const ID device){
-	JAKL_ASSERT((device == host_device()) || (device < num_device()));
-	void* ptr = omp_target_alloc(bytes, device);
+allocate_memory(const std::size_t bytes, const Device& dev){
+	void* ptr = omp_target_alloc(bytes, dev.id());
 	if( not ptr ){
 		// Some type of bad alloc
 	}
@@ -48,15 +52,14 @@ allocate_memory(const std::size_t bytes, const ID device){
 }
 
 void
-free_memory(void* device_ptr, const ID device){
-	JAKL_ASSERT((device == host_device()) || (device < num_device()));
-	omp_target_free(device_ptr, device);
+free_memory(void* device_ptr, const Device& dev){
+	omp_target_free(device_ptr, dev.id());
 }
 
 void
-memcpy(void* dst_ptr, const void* src_ptr, std::size_t bytes, ID dst_id, ID src_id){
+memcpy(void* dst_ptr, const void* src_ptr, std::size_t bytes, const Device& dst_dev, const Device&  src_dev){
 	const std::size_t zero_offset = 0;
-	omp_target_memcpy(dst_ptr, src_ptr, bytes, zero_offset, zero_offset, dst_id, src_id);
+	omp_target_memcpy(dst_ptr, src_ptr, bytes, zero_offset, zero_offset, dst_dev.id(), src_dev.id());
 }
 
 void*
@@ -69,9 +72,8 @@ malloc_host(const std::size_t bytes) {
 }
 
 void*
-malloc_device(const std::size_t bytes, const ID device) {
-	JAKL_ASSERT(device < num_device());
-	void* ptr = omp_target_alloc(bytes, device);
+malloc_device(const std::size_t bytes, const Device& dev) {
+	void* ptr = omp_target_alloc(bytes, dev.id());
 	if( not ptr ){
 		// Some type of bad alloc
 	}
@@ -79,9 +81,8 @@ malloc_device(const std::size_t bytes, const ID device) {
 }
 
 void*
-malloc_shared(const std::size_t bytes, const ID device) {
-	JAKL_ASSERT(device < num_device());
-	void* ptr = omp_target_alloc(bytes, device);
+malloc_shared(const std::size_t bytes, const Device& dev) {
+	void* ptr = omp_target_alloc(bytes, dev.id());
 	omp_target_associate_ptr(ptr,ptr,bytes,0,0);
 	if( not ptr ){
 		// Some type of bad alloc
