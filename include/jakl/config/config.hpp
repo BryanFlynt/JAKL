@@ -42,5 +42,9 @@
 #undef JAKL_USE_HIP_DEVICE
 
 
+#include "jakl/config/assert.hpp"
+#include "jakl/config/macros.hpp"
+
+
 
 #endif /* INCLUDE_JAKL_CONFIG_CONFIG_HPP_ */

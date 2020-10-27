@@ -75,7 +75,7 @@ Handler::parallel_for(Range<N> r, Functor f) {
 		//std::cout << "Running on DEVICE" << std::endl;
 
 		const std::size_t S = r.size();
-		const auto dev_id = queue_->get_device().id();
+		const int dev_id = queue_->get_device().id();
 
 		#pragma omp target data map(to: range_ptr[:N], f) device(dev_id)
 		{
