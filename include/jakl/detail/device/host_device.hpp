@@ -47,7 +47,6 @@ public:
 
 	ID const& id() const noexcept {
 		JAKL_ASSERT(false);
-		return ID(); // Return default ID
 	}
 
 };

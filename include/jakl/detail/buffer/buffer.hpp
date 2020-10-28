@@ -12,6 +12,7 @@
 
 #include "jakl/access.hpp"
 #include "jakl/config.hpp"
+#include "jakl/context.hpp"
 #include "jakl/handler.hpp"
 #include "jakl/id.hpp"
 #include "jakl/range.hpp"
@@ -48,7 +49,7 @@ public:
 	buffer(pointer host_ptr, const range_type& range);
 
 	template<access::mode Mode>
-	pointer get_access(const ID id);
+	pointer get_access(Context const& context);
 
 	template<access::mode Mode>
 	pointer get_access(const Handler& handle);
@@ -83,15 +84,17 @@ public:
 
 
 private:
-	pointer               host_ptr_;
-	std::map<ID,pointer>  data_ptrs_;
-	range_type            range_;
-	ID                    id_of_last_write_;
+	range_type                 range_;
+	Context                    source_context_;
+	pointer                    source_ptr_;
 
+	std::map<Context,pointer>  context_data_ptrs_;
+	Context                    context_of_last_write_;
 };
 
 } // namespace detail
 } // namespace jakl
+
 
 
 namespace jakl {
@@ -99,17 +102,21 @@ namespace detail {
 
 template<typename T, std::size_t N>
 buffer<T,N>::buffer(pointer host_ptr, const range_type& range)
-: host_ptr_(host_ptr),
-  range_(range),
-  id_of_last_write_(system::host_device()) {
+: source_ptr_(host_ptr),
+  range_(range) {
+
+	// Assumes Default Host Context
+	source_context_ = Context(system::host_device());
+	context_of_last_write_ = source_context_;
 
 	// Allocate buffer memory on host
-	auto dev_ptr = system::allocate_memory(bytes(),id_of_last_write_);
-	data_ptrs_[id_of_last_write_] = reinterpret_cast<pointer>(dev_ptr);
+	auto dev_ptr = system::allocate_memory(source_context_, bytes());
+	context_data_ptrs_[context_of_last_write_] = reinterpret_cast<pointer>(dev_ptr);
 
 	// Copy host data into buffer memory on host
 	this->update();
 }
+
 
 template<typename T, std::size_t N>
 buffer<T,N>::~buffer() {
@@ -118,15 +125,15 @@ buffer<T,N>::~buffer() {
 	this->flush();
 
 	// DeAllocate all device pointer memory
-	for(auto key_item: data_ptrs_){
-		system::free_memory(key_item.second, key_item.first);
+	for(auto& [context, ptr] : context_data_ptrs_) {
+		system::free_memory(context, ptr, bytes());
 	}
 }
 
 template<typename T, std::size_t N>
 template<access::mode Mode>
 typename buffer<T,N>::pointer
-buffer<T,N>::get_access(const ID id){
+buffer<T,N>::get_access(Context const& context){
 
 	// If we need space then allocate it
 	if constexpr(
@@ -134,25 +141,27 @@ buffer<T,N>::get_access(const ID id){
 			(Mode == access::mode::write) or
 			(Mode == access::mode::read_write) ) {
 
-		if( data_ptrs_.count(id) == 0 ){
-			auto ptr = system::allocate_memory(bytes(),id);
-			data_ptrs_[id] = reinterpret_cast<pointer>(ptr);
+		if( context_data_ptrs_.count(context) == 0 ){
+			auto ptr = system::allocate_memory(context, bytes());
+			context_data_ptrs_[context] = reinterpret_cast<pointer>(ptr);
 		}
 	}
-	JAKL_ASSERT(data_ptrs_.count(id));
+	JAKL_ASSERT(context_data_ptrs_.count(context) == 0);
+	JAKL_ASSERT(context_data_ptrs_[context]);
 
 	// If we need to copy data then do it
 	if constexpr(
 			(Mode == access::mode::read)  or
 			(Mode == access::mode::read_write) ) {
 
-		if( id != id_of_last_write_ ){
-			system::memcpy(
-					data_ptrs_[id],
-					data_ptrs_[id_of_last_write_],
-					bytes(),
-					id,
-					id_of_last_write_);
+		if( context != context_of_last_write_ ){
+			system::copy_memory(
+					context_data_ptrs_[context],                // Destination pointer
+					context_data_ptrs_[context_of_last_write_], // Source pointer
+					this->bytes(),                              // Size in Bytes
+					context,                                    // Destination Context
+					context_of_last_write_                      // Source Context
+					);
 		}
 	}
 
@@ -160,40 +169,46 @@ buffer<T,N>::get_access(const ID id){
 	if constexpr(
 			(Mode == access::mode::write)  or
 			(Mode == access::mode::read_write) ) {
-		id_of_last_write_ = id;
+		context_of_last_write_ = context;
 	}
 
-	return data_ptrs_[id];
+	return context_data_ptrs_[context];
 }
+
+
 
 template<typename T, std::size_t N>
 template<access::mode Mode>
 typename buffer<T,N>::pointer
 buffer<T,N>::get_access(const Handler& handle){
-	return this->get_access<Mode>(handle.get_device().id());
+	return this->get_access<Mode>(handle.get_context());
 }
+
 
 template<typename T, std::size_t N>
 void
 buffer<T,N>::flush() const {
-	system::memcpy(
-			host_ptr_,
-			data_ptrs_.at(id_of_last_write_),
-			bytes(),
-			system::host_device(),
-			id_of_last_write_);
+	system::copy_memory(
+			source_ptr_,                                // Destination pointer
+			context_data_ptrs_[context_of_last_write_], // Source pointer
+			this->bytes(),                              // Size in Bytes
+			source_context_,                            // Destination Context
+			context_of_last_write_                      // Source Context
+			);
+
 }
 
 template<typename T, std::size_t N>
 void
 buffer<T,N>::update() {
-	id_of_last_write_ = system::host_device();
-	system::memcpy(
-			data_ptrs_[id_of_last_write_],
-			host_ptr_,
-			bytes(),
-			id_of_last_write_,
-			id_of_last_write_);
+	system::copy_memory(
+			context_data_ptrs_[source_context_], // Destination pointer
+			source_ptr_,                         // Source pointer
+			this->bytes(),                       // Size in Bytes
+			source_context_,                     // Destination Context
+			source_context_                      // Source Context
+			);
+	context_of_last_write_ = source_context_;
 }
 
 template<typename T, std::size_t N>

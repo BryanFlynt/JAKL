@@ -37,11 +37,12 @@ public:
 	template<typename Name = std::nullptr_t, std::size_t N, typename Functor>
 	void parallel_for(Range<N> r, Functor f) {
 
+/**
 		// Get pointer to range data
 		// - We can't pass a Range<N> into Index<N> on device
 		const auto range_ptr = r.data();
 
-		if( get_context().device().is_host() ){
+		if( get_context().get_device().is_host() ){
 #pragma omp parallel for
 			for(std::size_t i = 0; i < r.size(); ++i){
 				f( Index<N>(i, range_ptr) );
@@ -50,7 +51,7 @@ public:
 		else {
 			JAKL_ASSERT(false);
 		}
-
+**/
 	}
 
 	void depends_on(const Event& event) const {

@@ -13,94 +13,166 @@
 #include "jakl/id.hpp"
 
 
+
 #include <cstddef>
 
 namespace jakl {
 namespace system {
+
+
+// ===================================================
+//             Device Query Routines
+// ===================================================
+
 
 /** Return Number of Devices on System
  */
 inline
 std::size_t num_device() {
 
+//
+// OpenMP Off-Loading
+//
+#if defined(JAKL_USE_OPENMP_DEVICE)
+	return openmp::num_device();
+	//return omp_get_num_devices();
+
+//
+// CUDA Off-Loading
+//
+#elif defined(JAKL_USE_CUDA_DEVICE)
+	return cuda::num_device();
+
+	//int count = 0;
+	//auto error_code = cudaGetDeviceCount(&count);
+	//if(error_code != cudaSuccess){
+	//	JAKL_ACCESS(false);
+	//}
+	//return count;
+
+//
+// HIP Off-Loading
+//
+#elif defined(JAKL_USE_HIP_DEVICE)
+	return hip::num_device();
+	//return 0;
+
+//
+// No Device Off-Loading
+//
+#else
+	return 0;
+
+#endif
+
 }
+
+// ===================================================
+//             Device Factory Routines
+// ===================================================
 
 /** Return Host Device
  */
-Device host_device();
+inline
+Device host_device() {
+	return detail::host_device::instance();
+}
+
+/** Return CPU Device
+ */
+inline
+Device cpu_device(ID const& id = 0) {
+	return std::make_shared<detail::cpu_device>(id);
+}
+
+/** Return GPU Device
+ */
+inline
+Device gpu_device(ID const& id = 0) {
+	return std::make_shared<detail::gpu_device>(id);
+}
 
 /** Return Default Device
- *
- * OpenMP always returns default_device of 0 even when there are no devices.
  */
-Device default_device();
+inline
+Device default_device() {
+	if( num_device() == 0 ){
+		return cpu_device();
+	}
+	return gpu_device();
+}
 
 
-namespace cpu {
 
-/** Allocate Memory on the CPU
+// ===================================================
+//                 Memory Routines
+// ===================================================
+
+/** Allocate Memory
  */
-void* malloc(const std::size_t bytes);
+void* allocate_memory(Context const& context, const std::size_t bytes) {
+	void* mem = nullptr;
+	if( context.get_device().is_host() ){
+		mem = host::allocate_memory(bytes);
+	}
+	else if( context.get_device().is_cpu() ){
+		mem = cpu::allocate_memory(bytes);
+	}
+	else if( context.get_device().is_gpu() ){
+		mem = gpu::allocate_memory(bytes);
+	}
+	else {
+		JAKL_ASSERT(false);
+	}
+	JAKL_ASSERT(mem);
+	return mem;
+}
 
-/** Copy Memory on the CPU
+/** Free Memory
  */
-void memcpy(void* dst_ptr, const void* src_ptr, std::size_t bytes);
+void free_memory(Context const& context, void* ptr_to_memory, const std::size_t bytes){
+	if( context.get_device().is_host() ){
+		host::free_memory(ptr_to_memory,bytes);
+	}
+	else if( context.get_device().is_cpu() ){
+		cpu::free_memory(ptr_to_memory,bytes);
+	}
+	else if( context.get_device().is_gpu() ){
+		gpu::free_memory(ptr_to_memory,bytes);
+	}
+	else {
+		JAKL_ASSERT(false);
+	}
+	ptr_to_memory = nullptr;
+}
 
-/** Free Memory on the CPU
+
+/** Copy Memory
  */
-void free(void* ptr);
+void copy_memory(
+		void* dst_ptr,
+		const void* src_ptr,
+		const std::size_t bytes,
+		Context const& dst_context,
+		Context const& src_context
+		) {
 
-} // namespace cpu
+	const auto& dst_device = dst_context.get_device();
+	const auto& src_device = src_context.get_device();
 
-
-
-namespace gpu {
-
-/** Allocate Memory on the GPU
- */
-void* malloc(const std::size_t bytes);
-
-/** Copy Memory on the GPU
- */
-void memcpy(void* dst_ptr, const void* src_ptr, std::size_t bytes);
-
-/** Free Memory on the GPU
- */
-void free(void* ptr);
-
-} // namespace gpu
-
-
-
-
-
-
-
-
-/** Allocate Device Memory
- */
-void* allocate_memory(const std::size_t bytes, const ID device);
-
-/** Free Device Memory
- */
-void free_memory(void* device_ptr, const ID device);
-
-
-/** Copy memory between device pointer
- */
-void memcpy(void* dst_ptr, const void* src_ptr, std::size_t bytes, ID dst_id, ID src_id);
-
-/** Allocate Memory on the Host
- */
-void* malloc_host(const std::size_t bytes);
-
-/** Allocate Memory on the Device
- */
-void* malloc_device(const std::size_t bytes, const ID device);
-
-/** Allocate Memory on the Shared Device
- */
-void* malloc_shared(const std::size_t bytes, const ID device);
+	if( dst_device.is_gpu() || src_device.is_gpu() ) {
+		gpu::copy_memory(dst_ptr,src_ptr,bytes,dst_context,src_context);
+	}
+	else if( dst_device.is_cpu() || src_device.is_cpu() ) {
+		cpu::copy_memory(dst_ptr,src_ptr,bytes,dst_context,src_context);
+	}
+	else if( dst_device.is_host() and src_device.is_host() ) {
+		host::copy_memory(dst_ptr,src_ptr,bytes,dst_context,src_context);
+	}
+	else {
+		JAKL_ASSERT(false);
+	}
+}
 
 
 

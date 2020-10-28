@@ -12,6 +12,7 @@
 #include "jakl/device.hpp"
 
 
+
 namespace jakl {
 
 
@@ -26,7 +27,7 @@ public:
 	// Construction & Destruction
 	//-------------------------------------------------------------------------
 public:
-	Context()                                = default;
+	Context()                                = delete;
 	Context(Context const& other)            = default;
 	Context(Context&& other)                 = default;
 	~Context()                               = default;
@@ -35,7 +36,7 @@ public:
 
 	/** Create Context with Device
 	 */
-	Context(Device const& device) : device_(device){
+	Context(Device const& device) : device_(device) {
 	}
 
 	//-------------------------------------------------------------------------
@@ -44,8 +45,14 @@ public:
 
 	/** Check if Context are the same
 	 */
+	bool operator<(Context const& other) const noexcept {
+		return get_device() < other.get_device();
+	}
+
+	/** Check if Context are the same
+	 */
 	bool operator==(Context const& other) const noexcept {
-		return device_ == other.device_;
+		return get_device() == other.get_device();
 	}
 
 	//-------------------------------------------------------------------------
@@ -54,7 +61,7 @@ public:
 
 	/** Get Contexts device
 	 */
-	Device const& device() const noexcept {
+	Device const& get_device() const noexcept {
 		return device_;
 	}
 
@@ -63,6 +70,7 @@ public:
 	//-------------------------------------------------------------------------
 private:
 	Device device_;
+
 };
 
 

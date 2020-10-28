@@ -10,6 +10,7 @@
 
 
 #include "jakl/access.hpp"
+#include "jakl/context.hpp"
 #include "jakl/handler.hpp"
 #include "jakl/id.hpp"
 #include "jakl/range.hpp"
@@ -45,8 +46,8 @@ public:
 	}
 
 	template<access::mode Mode>
-	pointer get_access(const ID id = system::host_device()){
-		return impl_ptr_->template get_access<Mode>(id);
+	pointer get_access(Context const& context){
+		return impl_ptr_->template get_access<Mode>(context);
 	}
 
 	template<access::mode Mode>

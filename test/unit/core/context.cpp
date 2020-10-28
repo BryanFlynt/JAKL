@@ -18,15 +18,15 @@ TEST_CASE("JAKL Context", "[default]") {
 
 		// Default constructor is on host device
 		jakl::Context context_on_host;
-		REQUIRE( context_on_host.device().is_host() == true );
+		REQUIRE( context_on_host.get_device().is_host() == true );
 
 		// Taking a Device
 		jakl::Device a;
 		jakl::Context c(a);
-		REQUIRE( context_on_host.device().is_host() == true );
+		REQUIRE( context_on_host.get_device().is_host() == true );
 
 		// Since only one host device exists they should be equal
-		REQUIRE(context_on_host.device() == context_on_host.device());
+		REQUIRE(context_on_host.get_device() == context_on_host.get_device());
 	}
 
 }
