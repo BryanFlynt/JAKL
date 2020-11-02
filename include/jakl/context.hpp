@@ -12,7 +12,6 @@
 #include "jakl/device.hpp"
 
 
-
 namespace jakl {
 
 

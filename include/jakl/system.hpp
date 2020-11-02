@@ -13,7 +13,6 @@
 #include "jakl/id.hpp"
 
 
-
 #include <cstddef>
 
 namespace jakl {
@@ -119,7 +118,7 @@ void* allocate_memory(Context const& context, const std::size_t bytes) {
 		mem = cpu::allocate_memory(bytes);
 	}
 	else if( context.get_device().is_gpu() ){
-		mem = gpu::allocate_memory(bytes);
+		mem = gpu::allocate_memory(context,bytes);
 	}
 	else {
 		JAKL_ASSERT(false);
@@ -138,7 +137,7 @@ void free_memory(Context const& context, void* ptr_to_memory, const std::size_t 
 		cpu::free_memory(ptr_to_memory,bytes);
 	}
 	else if( context.get_device().is_gpu() ){
-		gpu::free_memory(ptr_to_memory,bytes);
+		gpu::free_memory(context,ptr_to_memory,bytes);
 	}
 	else {
 		JAKL_ASSERT(false);
@@ -156,6 +155,8 @@ void copy_memory(
 		Context const& dst_context,
 		Context const& src_context
 		) {
+	JAKL_ASSERT(dst_ptr);
+	JAKL_ASSERT(src_ptr);
 
 	const auto& dst_device = dst_context.get_device();
 	const auto& src_device = src_context.get_device();
@@ -164,10 +165,10 @@ void copy_memory(
 		gpu::copy_memory(dst_ptr,src_ptr,bytes,dst_context,src_context);
 	}
 	else if( dst_device.is_cpu() || src_device.is_cpu() ) {
-		cpu::copy_memory(dst_ptr,src_ptr,bytes,dst_context,src_context);
+		cpu::copy_memory(dst_ptr,src_ptr,bytes);
 	}
 	else if( dst_device.is_host() and src_device.is_host() ) {
-		host::copy_memory(dst_ptr,src_ptr,bytes,dst_context,src_context);
+		host::copy_memory(dst_ptr,src_ptr,bytes);
 	}
 	else {
 		JAKL_ASSERT(false);
