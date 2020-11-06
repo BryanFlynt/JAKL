@@ -33,14 +33,14 @@ std::size_t num_device() {
 // OpenMP Off-Loading
 //
 #if defined(JAKL_USE_OPENMP_DEVICE)
-	return openmp::num_device();
+	return gpu::openmp::num_device();
 	//return omp_get_num_devices();
 
 //
 // CUDA Off-Loading
 //
 #elif defined(JAKL_USE_CUDA_DEVICE)
-	return cuda::num_device();
+	return gpu::cuda::num_device();
 
 	//int count = 0;
 	//auto error_code = cudaGetDeviceCount(&count);
@@ -53,7 +53,7 @@ std::size_t num_device() {
 // HIP Off-Loading
 //
 #elif defined(JAKL_USE_HIP_DEVICE)
-	return hip::num_device();
+	return gpu::hip::num_device();
 	//return 0;
 
 //

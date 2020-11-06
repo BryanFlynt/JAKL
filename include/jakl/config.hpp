@@ -24,7 +24,7 @@
 
 
 // ========================================================
-//                  Device Offload Model
+//                      Device Model
 // ========================================================
 
 //
@@ -48,6 +48,7 @@
 // ========================================================
 
 #include "jakl/detail/config/assert.hpp"
+#include "jakl/detail/config/error.hpp"
 #include "jakl/detail/config/macros.hpp"
 
 
