@@ -7,13 +7,10 @@ set(CATCH_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/test)
 # Build list of all tests to create
 #
 set(jakl_unit_files  
-		"buffer.cpp"
- 		"device.cpp"
- 		"event.cpp"
-		"index.cpp"
-		"queue.cpp"
-		"range.cpp"
-		"system.cpp"
+		context.cpp
+ 		device.cpp
+		id.cpp
+		system.cpp
 )
 
 #

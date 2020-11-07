@@ -1,15 +1,18 @@
 /*
  * jakl.hpp
  *
- *  Created on: Dec 15, 2019
+ *  Created on: Oct 21, 2020
  *      Author: bflynt
  */
 
 #ifndef INCLUDE_JAKL_HPP_
 #define INCLUDE_JAKL_HPP_
 
-#include "jakl/config/config.hpp"
-#include "jakl/core/core.hpp"
-#include "jakl/kernel/kernel.hpp"
+
+#include "jakl/config.hpp"
+#include "jakl/context.hpp"
+#include "jakl/device.hpp"
+#include "jakl/id.hpp"
+#include "jakl/system.hpp"
 
 #endif /* INCLUDE_JAKL_HPP_ */

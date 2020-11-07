@@ -17,26 +17,24 @@
 TEST_CASE("JAKL Device", "[default]") {
 	using namespace jakl;
 
-	SECTION("Default Device") {
-
-		Device dev;
-
-		REQUIRE( dev.id() == system::default_device() );
-	}
-
 	SECTION("Host Device") {
-
-		Device dev(system::host_device());
-
-		REQUIRE( dev.id() == system::host_device() );
+		Device dev = system::host_device();
+		REQUIRE( dev == system::host_device() );
 	}
 
-	SECTION("Random Device") {
+	SECTION("CPU Device") {
+		Device dev = system::cpu_device();
+		REQUIRE( dev == system::cpu_device() );
+	}
 
-		Device a(321);
-		Device b(321);
+	SECTION("GPU Device") {
+		Device dev = system::gpu_device();
+		REQUIRE( dev == system::gpu_device() );
+	}
 
-		REQUIRE( a == b );
+	SECTION("Default Device") {
+		Device dev = system::default_device();
+		REQUIRE( dev == system::default_device() );
 	}
 
 }

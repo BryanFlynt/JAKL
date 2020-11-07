@@ -11,7 +11,11 @@ add_library(jakl STATIC "")
 #
 target_sources(jakl
 	PRIVATE
-		core/system.cpp
+		system/cpu.cpp
+		system/gpu.cpp
+		system/host.cpp
+		system/openmp.cpp
+		system/system.cpp
 )
 
 #
@@ -23,7 +27,7 @@ option(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set_property(TARGET jakl PROPERTY CXX_EXTENSIONS OFF)
 target_compile_features(jakl
 	PUBLIC
-                cxx_std_17
+        cxx_std_17
 		cxx_constexpr
 		cxx_static_assert
 )
