@@ -31,6 +31,7 @@
 // Use OpenMP Off-Loading
 //
 #define JAKL_USE_OPENMP_DEVICE
+//#undef JAKL_USE_OPENMP_DEVICE
 
 //
 // Use CUDA Off-Loading

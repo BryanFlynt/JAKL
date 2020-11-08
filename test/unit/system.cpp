@@ -9,6 +9,9 @@
 #include "jakl.hpp"
 
 
+#include <cstdint>
+#include <iostream>
+
 // Let Catch provide main():
 #define CATCH_CONFIG_MAIN
 #include "../../test/catch.hpp"
@@ -42,11 +45,9 @@ TEST_CASE("JAKL System", "[default]") {
 //
 //		jakl::system::free_memory(ptr,device);
 //	}
-//
-	std::cout << "jakl::system::num_device()     = " << jakl::system::num_device()     << std::endl;
-//	std::cout << "jakl::system::host_device()    = " << jakl::system::host_device()    << std::endl;
-//	std::cout << "jakl::system::default_device() = " << jakl::system::default_device() << std::endl;
+
 }
+
 
 
 

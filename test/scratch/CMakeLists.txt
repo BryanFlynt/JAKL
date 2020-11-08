@@ -6,8 +6,7 @@
 # Build list of all tests to create
 #
 set(jakl_scratch_files  
-		"dag.cpp"
-		"dummy.cpp"
+		"openmp_report.cpp"
 )
 
 #
