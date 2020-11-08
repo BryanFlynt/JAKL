@@ -77,7 +77,7 @@ Device default_device() {
 	if( num_device() == 0 ){
 		return cpu_device();
 	}
-	return gpu_device(0);
+	return gpu_device();
 }
 
 
