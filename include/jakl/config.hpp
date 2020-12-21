@@ -15,7 +15,7 @@
 //
 // Use PTHREAD on CPU
 //
-#undef JAKL_USE_PTHREAD_HOST
+#undef JAKL_USE_PTHREAD_CPU
 
 //
 // Use OpenMP on CPU

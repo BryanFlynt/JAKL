@@ -9,6 +9,7 @@
 #define INCLUDE_JAKL_DETAIL_DEVICE_GPU_DEVICE_HPP_
 
 
+#include "jakl/config.hpp"
 #include "jakl/id.hpp"
 #include "jakl/detail/device/device.hpp"
 #include "jakl/detail/tools/singleton.hpp"
@@ -33,36 +34,34 @@ public:
 	gpu_device(ID const& id) : id_(id) {
 	}
 
-	/// Return true if "Host" device
+	/// Return false
 	bool is_host() const noexcept {
 		return false;
 	}
 
-	/// Return true if "CPU" device
+	/// Return false
 	bool is_cpu() const noexcept {
 		return false;
 	}
 
-	/// Return true if "GPU" device
+	/// Return true since "GPU" device
 	bool is_gpu() const noexcept {
 		return true;
 	}
 
+	/// Return ID
 	ID const& id() const noexcept {
 		return id_;
 	}
 
 protected:
 	ID id_;
-
 };
 
 
 
 } /* namespace detail */
 } /* namespace jakl */
-
-
 
 
 #endif /* INCLUDE_JAKL_DETAIL_DEVICE_GPU_DEVICE_HPP_ */

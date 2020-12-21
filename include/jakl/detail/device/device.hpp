@@ -33,6 +33,9 @@ public:
 	/// Return true if "GPU" device
 	virtual bool is_gpu() const noexcept = 0;
 
+	/// Return true if "Accelerator" device
+	virtual bool is_accelerator() const noexcept = 0;
+
 	/// Return Device ID if exists
 	virtual ID const& id() const noexcept = 0;
 };

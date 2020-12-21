@@ -9,8 +9,10 @@
 #define INCLUDE_JAKL_DETAIL_DEVICE_CPU_DEVICE_HPP_
 
 
+#include "jakl/config.hpp"
 #include "jakl/id.hpp"
 #include "jakl/detail/device/device.hpp"
+#include "jakl/detail/tools/singleton.hpp"
 
 
 namespace jakl {
@@ -18,42 +20,40 @@ namespace detail {
 
 
 class cpu_device :
-		public device {
+		public device,
+		public detail::singleton<cpu_device> {
 
 public:
+	cpu_device()                                   = default;
 	cpu_device(cpu_device const& other)            = default;
 	cpu_device(cpu_device&& other)                 = default;
 	cpu_device& operator=(cpu_device const& other) = default;
 	cpu_device& operator=(cpu_device&& other)      = default;
 	virtual ~cpu_device(){}
 
-	cpu_device() : id_(0) {
-	}
-
-	cpu_device(ID const& id) : id_(id) {
-	}
-
-	/// Return true if "Host" device
+	// Return false
 	bool is_host() const noexcept {
 		return false;
 	}
 
-	// Return true if "CPU" device
+	// Return true since "CPU" device
 	bool is_cpu() const noexcept {
 		return true;
 	}
 
-	/// Return true if "GPU" device
+	// Return false
 	bool is_gpu() const noexcept {
 		return false;
 	}
 
-	ID const& id() const noexcept {
-		return id_;
+	// Return false
+	bool is_accelerator() const noexcept {
+		return false;
 	}
 
-protected:
-	ID id_;
+	ID const& id() const noexcept {
+		JAKL_ASSERT(false);
+	}
 
 };
 

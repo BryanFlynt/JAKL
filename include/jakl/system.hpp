@@ -8,7 +8,7 @@
 #ifndef INCLUDE_JAKL_SYSTEM_HPP_
 #define INCLUDE_JAKL_SYSTEM_HPP_
 
-#include "jakl/context.hpp"
+//#include "jakl/context.hpp"
 #include "jakl/device.hpp"
 #include "jakl/id.hpp"
 
@@ -37,7 +37,7 @@ Device host_device();
 
 /** Return CPU Device
  */
-Device cpu_device(ID const& id = 0);
+Device cpu_device();
 
 /** Return GPU Device
  */
@@ -47,30 +47,6 @@ Device gpu_device(ID const& id = 0);
  */
 Device default_device();
 
-
-
-// ===================================================
-//                 Memory Routines
-// ===================================================
-
-/** Allocate Memory
- */
-void* allocate_memory(Context const& context, const std::size_t bytes);
-
-/** Free Memory
- */
-void free_memory(Context const& context, void* ptr_to_memory, const std::size_t bytes);
-
-
-/** Copy Memory
- */
-void copy_memory(
-		void* dst_ptr,
-		const void* src_ptr,
-		const std::size_t bytes,
-		Context const& dst_context,
-		Context const& src_context
-		);
 
 
 } // namespace system

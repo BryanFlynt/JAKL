@@ -11,10 +11,7 @@ add_library(jakl STATIC "")
 #
 target_sources(jakl
 	PRIVATE
-		system/cpu.cpp
 		system/gpu.cpp
-		system/host.cpp
-		system/openmp.cpp
 		system/system.cpp
 )
 

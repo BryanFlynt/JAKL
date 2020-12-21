@@ -8,24 +8,23 @@
 #ifndef INCLUDE_JAKL_DETAIL_SYSTEM_CPU_HPP_
 #define INCLUDE_JAKL_DETAIL_SYSTEM_CPU_HPP_
 
+
 #include <cstddef>  // std::size_t
 
 namespace jakl {
 namespace system {
 namespace cpu {
 
-/** Allocate Memory
+/// Return number of CPU Devices on System
+/*
  */
-void* allocate_memory(const std::size_t bytes);
-
-void free_memory(void* ptr_to_memory, const std::size_t bytes);
-
-void copy_memory(void* dst_ptr,	const void* src_ptr, const std::size_t bytes);
-
+constexpr
+std::size_t num_device() noexcept {
+	return 1;
+}
 
 } /* namespace cpu */
 } /* namespace system */
 } /* namespace jakl */
-
 
 #endif /* INCLUDE_JAKL_DETAIL_SYSTEM_CPU_HPP_ */
