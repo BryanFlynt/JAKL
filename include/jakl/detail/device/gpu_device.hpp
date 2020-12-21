@@ -33,21 +33,27 @@ public:
 	gpu_device(ID const& id) : id_(id) {
 	}
 
-	/// Return true if "Host" device
+	/// Test if device is Host
 	bool is_host() const noexcept {
 		return false;
 	}
 
-	// Return true if "CPU" device
+	// Test if device is CPU
 	bool is_cpu() const noexcept {
 		return false;
 	}
 
-	/// Return true if "GPU" device
+	/// Test if device is GPU
 	bool is_gpu() const noexcept {
 		return true;
 	}
 
+	/// Test if device is Accelerator
+	bool is_accelerator() const noexcept {
+		return false;
+	}
+
+	/// Return Device ID if exists
 	ID const& id() const noexcept {
 		return id_;
 	}

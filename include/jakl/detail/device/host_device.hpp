@@ -30,18 +30,23 @@ public:
 	host_device& operator=(host_device&& other)      = default;
 	virtual ~host_device(){}
 
-	/// Return true if "Host" device
+	/// Return true since "Host" device
 	bool is_host() const noexcept {
 		return true;
 	}
 
-	// Return true if "CPU" device
+	/// Return false
 	bool is_cpu() const noexcept {
-		return true;
+		return false;
 	}
 
-	/// Return true if "GPU" device
+	/// Return false
 	bool is_gpu() const noexcept {
+		return false;
+	}
+
+	/// Return false
+	bool is_accelerator() const noexcept {
 		return false;
 	}
 

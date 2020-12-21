@@ -11,13 +11,28 @@
 #include "jakl/id.hpp"
 
 #include "jakl/detail/device/device.hpp"
+#include "jakl/detail/device/cpu_device.hpp"
 #include "jakl/detail/device/gpu_device.hpp"
 #include "jakl/detail/device/host_device.hpp"
 #include "jakl/detail/tools/shared_ptr_impl.hpp"
 
-#include <cassert>
 
 namespace jakl {
+
+
+struct default_selector {};
+struct host_selector {};
+struct cpu_selector {};
+struct gpu_selector {};
+struct accelerator_selector {};
+
+
+default_selector     default_selector_v;
+host_selector        host_selector_v;
+cpu_selector         cpu_selector_v;
+gpu_selector         gpu_selector_v;
+accelerator_selector accelerator_selector_v;
+
 
 
 class Device : public detail::shared_ptr_impl<Device, detail::device> {
@@ -46,7 +61,21 @@ public:
 	/** Device with ID uses GPU device
 	 * TODO: Should get gpu_device from a Factory class
 	 */
-	Device(ID const& id) : base_type{ new detail::gpu_device(id) }  {
+	Device(ID const& id) : base_type{ std::make_shared<detail::gpu_device>(id) }  {
+	}
+
+
+	Device(host_selector const& /* selector */) : base_type{ detail::host_device::instance() } {
+	}
+
+	Device(cpu_selector const& /* selector */) : base_type{ detail::cpu_device::instance() } {
+	}
+
+	Device(gpu_selector const& /* selector */) : base_type{ std::make_shared<detail::gpu_device>(0) } {
+	}
+
+	Device(accelerator_selector const& /* selector */) {
+		JAKL_ASSERT("Not Implemented");
 	}
 
 	//-------------------------------------------------------------------------
@@ -76,10 +105,15 @@ public:
 		return impl->is_gpu();
 	}
 
+	/** Returns true if Device is Accelerator
+	 */
+	bool is_accelerator() const noexcept {
+		return impl->is_accelerator();
+	}
+
 	/** Get ID of Device
 	 */
 	ID const& id() const noexcept {
-		assert(not is_host());
 		return impl->id();
 	}
 

@@ -5,7 +5,7 @@
 #
 # Set the location of the catch testing header
 #
-set(CATCH_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/test/unit)
+set(CATCH_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/test)
 
 #
 # Function to add a test and include catch.hpp

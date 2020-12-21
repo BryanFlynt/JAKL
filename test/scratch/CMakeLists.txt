@@ -31,5 +31,5 @@ function(add_scratch_test test_name)
 endfunction()
 
 
-add_scratch_test(simple)
+#add_scratch_test(simple)
 
