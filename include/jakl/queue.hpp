@@ -12,14 +12,15 @@
 #include "jakl/context.hpp"
 #include "jakl/device.hpp"
 #include "jakl/event.hpp"
+#include "jakl/handler.hpp"
 #include "jakl/detail/queue/queue.hpp"
-#include "jakl/detail/queue/gpu_queue.hpp"
+#include "jakl/detail/queue/cpu_queue.hpp"
 #include "jakl/detail/queue/host_queue.hpp"
 #include "jakl/detail/tools/shared_ptr_impl.hpp"
 
-
+#include <functional>
 #include <memory>
-
+#include <utility>
 
 namespace jakl {
 
@@ -38,18 +39,23 @@ public:
 	 */
 	Queue(const Context& context) {
 		if( context.device().is_host() ) {
-			impl.reset(new detail::host_queue(context));
+			impl = std::make_shared<detail::host_queue>(context);
 		}
-		else if( context.device().is_gpu() ) {
-			impl.reset(new detail::gpu_queue(context));
+		else if( context.device().is_cpu() ) {
+			impl = std::make_shared<detail::cpu_queue>(context);
+		}
+//		else if( context.device().is_gpu() ) {
+//			impl.reset(std::make_shared<detail::gpu_queue>(context));
+//		}
+		else {
+			JAKL_ASSERT("Not Implemented");
 		}
 	}
 
 	/** Submit function to be run
 	 */
-	template<typename TaskPred>
-	Event submit(TaskPred&& func) {
-		return impl->submit(func);
+	Event submit(std::function<void(Handler&&)>&& func) {
+		return impl->submit(std::move(func));
 	}
 
 	/** Get Context of Queue

@@ -17,6 +17,7 @@ function(add_scratch_test test_name)
     )
    	target_link_libraries(${test_target}
 		PRIVATE
+			Threads::Threads
 	)
 	set_target_properties(${test_target}
 		PROPERTIES
@@ -31,5 +32,4 @@ function(add_scratch_test test_name)
 endfunction()
 
 
-#add_scratch_test(simple)
-
+add_scratch_test(simple)

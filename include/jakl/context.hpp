@@ -26,7 +26,7 @@ public:
 	// Construction & Destruction
 	//-------------------------------------------------------------------------
 public:
-	Context()                                = default;
+	Context()                                = delete;
 	Context(Context const& other)            = default;
 	Context(Context&& other)                 = default;
 	~Context()                               = default;

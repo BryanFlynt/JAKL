@@ -10,12 +10,11 @@
 
 
 #include "jakl/context.hpp"
-#include "jakl/device.hpp"
 #include "jakl/event.hpp"
 #include "jakl/handler.hpp"
 
+#include <functional>
 #include <list>
-#include <future> // std::async
 
 namespace jakl {
 namespace detail {
@@ -39,8 +38,8 @@ public:
 	queue(const Context& context) : execution_context_(context){
 	}
 
-	template<typename TaskPred>
-	virtual Event submit(TaskPred&& func) = 0;
+
+	virtual Event submit(std::function<void(Handler&&)>&& func) = 0;
 
 	/** Return the device the queue runs on
 	 */

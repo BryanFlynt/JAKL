@@ -40,7 +40,7 @@ public:
 	gpu_queue(gpu_queue&& other)                 = default;
 	gpu_queue& operator=(const gpu_queue& other) = default;
 	gpu_queue& operator=(gpu_queue&& other)      = default;
-	~gpu_queue()                                 = default;
+	virtual ~gpu_queue()                         = default;
 
 	/** Create Queue using provided Context
 	 */

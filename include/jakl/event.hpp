@@ -8,45 +8,36 @@
 #ifndef INCLUDE_JAKL_EVENT_HPP_
 #define INCLUDE_JAKL_EVENT_HPP_
 
-
-
-#include "jakl/detail/event/event.hpp"
-#include "jakl/detail/tools/shared_ptr_impl.hpp"
-
-
 #include <future>
+
+#include "jakl/config.hpp"
+
 
 namespace jakl {
 
 
-class Event : public detail::shared_ptr_impl<Event,detail::event> {
+class Event {
 
 public:
 
-	Event()                              = default;
+	Event()                              = delete;
 	Event(const Event& other)            = default;
 	Event(Event&& other)                 = default;
 	Event& operator=(const Event& other) = default;
 	Event& operator=(Event&& other)      = default;
 	~Event()                             = default;
 
+	Event(const std::shared_future<void>& f) : future_(f) {
+	}
+
 	/** Wait till task is complete
 	 */
 	void wait() const {
-		impl->wait();
+		future_.wait();
 	}
 
-
 private:
-	// Provide shortcut for base type name
-	using base_type = typename Event::shared_ptr_impl;
-
-	// Allow base to access for comparison operators
-	friend base_type;
-
-	// Make the base_ptr directly accessible in this class
-	using base_type::impl;
-
+	std::shared_future<void> future_;
 };
 
 } // namespace jakl

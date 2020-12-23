@@ -103,6 +103,9 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.11.999")
 	cmake_policy(SET CMP0074 NEW) # find_package search <name>_ROOT
 endif()
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 set(USE_OPENMP TRUE)
 if(USE_OPENMP) 
 	find_package(_OpenMP) 

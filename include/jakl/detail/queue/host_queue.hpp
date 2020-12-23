@@ -13,13 +13,9 @@
 #include "jakl/device.hpp"
 #include "jakl/event.hpp"
 #include "jakl/handler.hpp"
-
-#include "jakl/detail/event/host_event.hpp"
-#include "jakl/detail/handler/gpu_handler.hpp"
+#include "jakl/detail/handler/host_handler.hpp"
 #include "jakl/detail/queue/queue.hpp"
 
-
-#include <list>
 
 
 namespace jakl {
@@ -37,7 +33,7 @@ public:
 	host_queue(host_queue&& other)                 = default;
 	host_queue& operator=(const host_queue& other) = default;
 	host_queue& operator=(host_queue&& other)      = default;
-	~host_queue()                                  = default;
+	virtual ~host_queue()                          = default;
 
 	/** Create Queue using provided Context
 	 */
@@ -46,15 +42,18 @@ public:
 
 	/** Launch Task to run on Host
 	 */
-	template<typename TaskPred>
-	Event submit(TaskPred&& func) {
-		Handler kernel_handler( std::make_shared<host_handler>(shared_from_this()) );
-		auto kernel_future = std::async(std::launch::async, std::forward<TaskPred>(func), kernel_handler);
+	Event submit(std::function<void(Handler&&)>&& func) {
+		auto kernel_handler_ptr = std::make_shared<host_handler>(get_context());
+		auto kernel_handler     = Handler(kernel_handler_ptr);
+		auto kernel_future = std::async(std::launch::async, std::move(func), kernel_handler);
 		auto shared_future = kernel_future.share();         // Get copy-able future
 		this->running_kernels_.emplace_back(shared_future); // Calls Event Constructor
 		return this->running_kernels_.back();
+		//		func( Handler(kernel_handler_ptr) );
+		//		auto shared_future = kernel_future.share();         // Get copy-able future
+		//		this->running_kernels_.emplace_back(shared_future); // Calls Event Constructor
+		//		return this->running_kernels_.back();
 	}
-
 
 
 private:
